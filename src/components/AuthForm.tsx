@@ -12,12 +12,11 @@ interface AuthFormProps {
 }
 
 const sampleUsers = [
-  { email: "admin@example.com", password: "admin123", label: "Admin" },
-  { email: "user@example.com", password: "user123", label: "Basic User" },
-  { email: "test@example.com", password: "test123", label: "Test User" },
-  { email: "demo@example.com", password: "demo123", label: "Demo User" },
-  { email: "guest@example.com", password: "guest123", label: "Guest" },
-  { email: "viewer@example.com", password: "viewer123", label: "Viewer" },
+  { email: "customer1@example.com", password: "customer123", label: "Customer 1" },
+  { email: "customer2@example.com", password: "customer123", label: "Customer 2" },
+  { email: "agent1@example.com", password: "agent123", label: "Support Agent 1" },
+  { email: "agent2@example.com", password: "agent123", label: "Support Agent 2" },
+  { email: "supervisor@example.com", password: "supervisor123", label: "Supervisor" },
 ];
 
 const AuthForm = ({ isLogin = true, onToggle }: AuthFormProps) => {
@@ -56,7 +55,7 @@ const AuthForm = ({ isLogin = true, onToggle }: AuthFormProps) => {
 
   return (
     <div className="space-y-6">
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-4 w-full max-w-sm">
         <div className="space-y-2">
           <Label htmlFor="email">Email</Label>
           <div className="relative">
@@ -93,30 +92,32 @@ const AuthForm = ({ isLogin = true, onToggle }: AuthFormProps) => {
       </form>
 
       {isLogin && (
-        <div className="space-y-4">
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t" />
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-background px-2 text-muted-foreground">
-                Sample Accounts
-              </span>
-            </div>
-          </div>
+        <div className="space-y-2">
+          <div className="text-sm text-muted-foreground">Quick Login As:</div>
           <div className="grid grid-cols-2 gap-2">
             {sampleUsers.map((user) => (
               <Button
                 key={user.email}
                 type="button"
                 variant="outline"
+                className="w-full"
                 onClick={() => handleSampleLogin(user.email, user.password)}
-                className="text-xs"
               >
                 {user.label}
               </Button>
             ))}
           </div>
+          <Button
+            type="button"
+            variant="ghost"
+            className="w-full text-destructive"
+            onClick={() => {
+              navigate("/dashboard");
+              toast.error("Access denied! Please log in first.");
+            }}
+          >
+            Try Unauthenticated
+          </Button>
         </div>
       )}
 

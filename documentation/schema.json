@@ -1,0 +1,8 @@
+﻿{
+    "tables":  {
+                   "roles":  {
+                                 "id":  "uuid",
+                                 "role":  "user_role"
+                             }
+               }
+}

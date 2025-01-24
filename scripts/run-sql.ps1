@@ -12,7 +12,13 @@ if (-not (Test-Path $SqlFile)) {
 # Get the container ID
 $containerId = "supabase_db_wyyjgpazdytokciipfdd"
 
+# Run the specified SQL file
 Write-Host "Running $SqlFile in Supabase container..."
 Get-Content $SqlFile | docker exec -i $containerId psql -U postgres
+
+# Update schema documentation
+Write-Host "Updating schema documentation..."
+$scriptPath = Split-Path -Parent $MyInvocation.MyCommand.Path
+& "$scriptPath/update-schema.ps1"
 
 Write-Host "Done!"
