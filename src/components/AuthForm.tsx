@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { User, Lock } from "lucide-react";
+import { supabase } from "@/lib/supabase";
 
 interface AuthFormProps {
   isLogin?: boolean;
@@ -28,20 +29,32 @@ const AuthForm = ({ isLogin = true, onToggle }: AuthFormProps) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!email || !password) {
+      toast.error('Please enter both email and password');
+      return;
+    }
+
     setIsLoading(true);
-    
-    // Simulate auth - replace with real auth later
-    setTimeout(() => {
-      setIsLoading(false);
+    try {
+      const { error } = isLogin
+        ? await supabase.auth.signInWithPassword({ email, password })
+        : await supabase.auth.signUp({ email, password });
+
+      if (error) throw error;
+
       if (isLogin) {
-        localStorage.setItem("isAuthenticated", "true");
         toast.success("Successfully logged in!");
         navigate("/dashboard");
       } else {
         toast.success("Account created successfully!");
         onToggle();
       }
-    }, 1000);
+    } catch (error) {
+      console.error('Auth error:', error);
+      toast.error(error.message || 'Authentication failed');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleSampleLogin = (sampleEmail: string, samplePassword: string) => {
@@ -102,39 +115,29 @@ const AuthForm = ({ isLogin = true, onToggle }: AuthFormProps) => {
             {sampleUsers.map((user) => (
               <Button
                 key={user.email}
-                type="button"
                 variant="outline"
-                className="w-full"
+                size="sm"
+                className="text-xs"
                 onClick={() => handleSampleLogin(user.email, user.password)}
+                disabled={isLoading}
               >
                 {user.label}
               </Button>
             ))}
           </div>
-          <Button
-            type="button"
-            variant="ghost"
-            className="w-full text-destructive"
-            onClick={() => {
-              navigate("/dashboard");
-              toast.error("Access denied!");
-            }}
-          >
-            No Auth
-          </Button>
         </div>
       )}
 
-      <p className="text-sm text-center text-muted-foreground">
-        {isLogin ? "Don't have an account?" : "Already have an account?"}{" "}
+      <div className="text-sm text-center">
         <button
           type="button"
           onClick={onToggle}
           className="text-primary hover:underline"
+          disabled={isLoading}
         >
-          {isLogin ? "Sign Up" : "Sign In"}
+          {isLogin ? "Need an account? Sign up" : "Already have an account? Sign in"}
         </button>
-      </p>
+      </div>
     </div>
   );
 };

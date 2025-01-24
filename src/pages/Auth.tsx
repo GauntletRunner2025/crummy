@@ -6,7 +6,7 @@ const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
+    <div className="page-container">
       <AuthCard
         title={isLogin ? "Sign In" : "Sign Up"}
         description=""

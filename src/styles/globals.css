@@ -1,0 +1,83 @@
+/* Global Layout Classes */
+.page-container {
+  @apply min-h-screen flex items-center justify-center p-4;
+}
+
+.content-card {
+  @apply w-[380px] bg-card text-card-foreground shadow-sm rounded-lg border;
+}
+
+.content-card-header {
+  @apply flex flex-col space-y-1.5 p-6;
+}
+
+.content-card-title {
+  @apply text-2xl font-semibold leading-none tracking-tight;
+}
+
+.content-card-description {
+  @apply text-sm text-muted-foreground;
+}
+
+.content-card-content {
+  @apply p-6 pt-0;
+}
+
+.form-container {
+  @apply grid gap-4;
+}
+
+.form-group {
+  @apply grid gap-2;
+}
+
+.form-label {
+  @apply text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70;
+}
+
+.form-input {
+  @apply flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors 
+         file:border-0 file:bg-transparent file:text-sm file:font-medium 
+         placeholder:text-muted-foreground 
+         focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring 
+         disabled:cursor-not-allowed disabled:opacity-50;
+}
+
+.form-button {
+  @apply w-full inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors 
+         focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring 
+         disabled:pointer-events-none disabled:opacity-50
+         bg-primary text-primary-foreground shadow hover:bg-primary/90;
+}
+
+.icon-button {
+  @apply inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors 
+         focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring 
+         disabled:pointer-events-none disabled:opacity-50
+         border border-input bg-transparent shadow-sm hover:bg-accent hover:text-accent-foreground;
+}
+
+/* Grid Layout Classes */
+.grid-layout {
+  @apply flex flex-wrap min-h-screen w-full;
+}
+
+.grid-cell {
+  @apply flex items-center justify-center border border-border p-4 box-border;
+}
+
+.grid-cell-top {
+  @apply w-1/3 h-[19vh];
+}
+
+.grid-cell-center {
+  @apply w-[62%] h-[62vh];
+}
+
+.grid-cell-side {
+  @apply w-[19%] h-[62vh];
+}
+
+.grid-cell-bottom {
+  @apply w-1/3 h-[19vh];
+}
