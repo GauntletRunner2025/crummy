@@ -13,12 +13,12 @@ interface AuthFormProps {
 }
 
 const sampleUsers = [
-  { email: "customer1@example.com", password: "customer123", label: "Customer 1" },
-  { email: "customer2@example.com", password: "customer123", label: "Customer 2" },
-  { email: "agent1@example.com", password: "agent123", label: "Agent 1" },
-  { email: "agent2@example.com", password: "agent123", label: "Agent 2" },
-  { email: "supervisor@example.com", password: "supervisor123", label: "Supervisor" },
-  { email: "hr@example.com", password: "hr123", label: "HR" }
+  { email: "customer1@example.com", password: "password123", label: "Customer 1" },
+  { email: "customer2@example.com", password: "password123", label: "Customer 2" },
+  { email: "agent1@example.com", password: "password123", label: "Agent 1" },
+  { email: "agent2@example.com", password: "password123", label: "Agent 2" },
+  { email: "supervisor@example.com", password: "password123", label: "Supervisor" },
+  { email: "hr@example.com", password: "password123", label: "HR" }
 ];
 
 const AuthForm = ({ isLogin = true, onToggle }: AuthFormProps) => {
