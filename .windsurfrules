@@ -1,14 +1,19 @@
+Remember that we are sometimes in different environments. The database might be on localhost, or connecting to the supabase.co server. The supabase url might need to point to 127.0.0.1:54321 or the commands we're running in the terminal (Eg. npx supabase start) might be heading out to the server in the cloud instead of our local one. This has been a problem before.
+
+When designing UI, try and go with the golden ratio. 62% for the larger portion, 38% for the smaller portion. Smaller portions can be subdivided, but they should be subdivided equally, and not have their own golden ratios. Meaning two sections of 19% each.
 Supabase uses the public schema by default, so make sure not to accidently double it.
 Remember that the users table is in the auth schema, not public. Thats where the users email is.
-When designing tables, don't bother with created_at or updated_at timestamps.
+When creating tables, don't bother with created_at or updated_at timestamps. However, tables in the auth schema do use timestamps so comply with that.
 The using clause is not allowed for insert policies. Instead, you should use the with check clause to specify conditions that must be met for the insert operation.
 
  In PostgreSQL, the update keyword should not be used in the context of defining a policy for multiple operations in a single statement. Each operation (select, insert, update, delete) must have its own policy.
 
 When working on a web app (react, typescript , etc) consider the example_table_template.sql, ExampleComponent.css, ExampleComponent.tsx, and ./supabase/functions/example-function/index.ts files. They are known-good.
 
-Files should be no more than 60 lines.
 We are using Windows 11, so terminal commands should be PowerShell.
+
+When calling supabase, remember to use npx
+
 Prefer "early out" patterns, which check a condition and return early if it's not what we want. THis saves on nesting.
 
 When something is null, make sure to throw an error, do not just ignore it.
