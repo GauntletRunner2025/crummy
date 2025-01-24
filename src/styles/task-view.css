@@ -1,0 +1,19 @@
+.task-view-container {
+  @apply h-full w-full;
+}
+
+.task-view-card {
+  @apply h-full w-full border-0 rounded-none shadow-none;
+}
+
+.task-view-header {
+  @apply px-4 py-3 border-b;
+}
+
+.task-view-title {
+  @apply text-2xl font-semibold;
+}
+
+.task-view-content {
+  @apply p-4;
+}

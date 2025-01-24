@@ -10,6 +10,7 @@ interface GridSlot {
 }
 
 interface MainLayoutProps {
+  topLeft?: GridSlot;
   topCenter?: GridSlot;
   topRight?: GridSlot;
   leftPanel?: GridSlot;
@@ -21,6 +22,7 @@ interface MainLayoutProps {
 }
 
 const MainLayout: React.FC<MainLayoutProps> = ({
+  topLeft,
   topCenter,
   topRight,
   leftPanel,
@@ -42,10 +44,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({
     <div className="grid-layout">
       {/* Top Row */}
       <div className="grid-cell grid-cell-top">
-        <Button variant="outline" onClick={handleLogout} className="icon-button">
-          <LogOut className="mr-2 h-4 w-4" />
-          Logout
-        </Button>
+        {topLeft?.content || <div>Navigation</div>}
       </div>
       <div className="grid-cell grid-cell-top">
         {topCenter?.content || <div>Welcome</div>}

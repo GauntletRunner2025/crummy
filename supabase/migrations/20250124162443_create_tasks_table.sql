@@ -1,7 +1,8 @@
 create table public.tasks (
     id uuid default gen_random_uuid() primary key,
     title text not null,
-    assigned_to uuid references auth.users(id)
+    assigned_to uuid references auth.users(id),
+    type text not null default 'Default'
 );
 
 alter table public.tasks enable row level security;

@@ -1,16 +1,22 @@
 import { useEffect, useState } from 'react';
 import { supabase } from "@/lib/supabase";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Task } from "@/components/Task";
+import { TaskButton } from "@/components/TaskButton";
 import '@/styles/task-list.css';
 
 interface Task {
   id: string;
   title: string;
   assigned_to: string;
+  type: 'SetDisplayName' | 'Default';
 }
 
-export function TaskList() {
+interface TaskListProps {
+  onTaskSelect: (task: { id: string; title: string } | null) => void;
+  selectedTaskId?: string;
+}
+
+export function TaskList({ onTaskSelect, selectedTaskId }: TaskListProps) {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [userId, setUserId] = useState<string | null>(null);
 
@@ -88,13 +94,17 @@ export function TaskList() {
     <ScrollArea className="task-list-container">
       <div className="task-list-content">
         <h2 className="task-list-title">Your Tasks</h2>
-        {tasks.map((task) => (
-          <Task
-            key={task.id}
-            id={task.id}
-            title={task.title}
-          />
-        ))}
+        <div className="flex flex-col">
+          {tasks.map((task) => (
+            <TaskButton
+              key={task.id}
+              id={task.id}
+              title={task.title}
+              isSelected={task.id === selectedTaskId}
+              onSelect={onTaskSelect}
+            />
+          ))}
+        </div>
       </div>
     </ScrollArea>
   );

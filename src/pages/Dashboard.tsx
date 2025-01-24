@@ -1,15 +1,21 @@
 import { Card } from "@/components/ui/card";
-import NineGridLayout from "@/components/NineGridLayout";
+import MainLayout from "@/components/MainLayout";
 import LogoutButton from "@/components/LogoutButton";
 import UserProfile from "@/components/UserProfile";
 import { TaskList } from "@/components/TaskList";
+import { TaskView } from "@/components/TaskView";
+import { useState } from 'react';
 
-const Dashboard = () => {
+interface SelectedTask {
+  id: string;
+  title: string;
+}
+
+export default function Dashboard() {
+  const [selectedTask, setSelectedTask] = useState<SelectedTask | null>(null);
+
   return (
-    <NineGridLayout
-      topLeft={{
-        content: <UserProfile />
-      }}
+    <MainLayout
       topCenter={{
         content: (
           <div className="text-center">
@@ -21,7 +27,20 @@ const Dashboard = () => {
         content: <LogoutButton />
       }}
       leftPanel={{
-        content: <TaskList />
+        content: (
+          <TaskList 
+            selectedTask={selectedTask} 
+            onTaskSelect={setSelectedTask}
+          />
+        )
+      }}
+      mainContent={{
+        content: (
+          <TaskView 
+            task={selectedTask} 
+            onClose={() => setSelectedTask(null)} 
+          />
+        )
       }}
       rightPanel={{
         content: (
@@ -54,5 +73,3 @@ const Dashboard = () => {
     />
   );
 };
-
-export default Dashboard;
