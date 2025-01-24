@@ -8,4 +8,6 @@ VALUES
   (gen_random_uuid(), 'agent1@example.com', crypt('agent123', gen_salt('bf')), now(), '{"provider":"email","providers":["email"]}'),
   (gen_random_uuid(), 'agent2@example.com', crypt('agent123', gen_salt('bf')), now(), '{"provider":"email","providers":["email"]}'),
   -- Supervisor
-  (gen_random_uuid(), 'supervisor@example.com', crypt('supervisor123', gen_salt('bf')), now(), '{"provider":"email","providers":["email"]}');
+  (gen_random_uuid(), 'supervisor@example.com', crypt('supervisor123', gen_salt('bf')), now(), '{"provider":"email","providers":["email"]}'),
+  -- HR
+  (gen_random_uuid(), 'hr@example.com', crypt('hr123', gen_salt('bf')), now(), '{"provider":"email","providers":["email"]}');
