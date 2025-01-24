@@ -2,6 +2,7 @@ import { Card } from "@/components/ui/card";
 import NineGridLayout from "@/components/NineGridLayout";
 import LogoutButton from "@/components/LogoutButton";
 import UserProfile from "@/components/UserProfile";
+import { TaskList } from "@/components/TaskList";
 
 const Dashboard = () => {
   return (
@@ -20,11 +21,7 @@ const Dashboard = () => {
         content: <LogoutButton />
       }}
       leftPanel={{
-        content: (
-          <div>
-            <h2 className="text-xl font-semibold">Navigation</h2>
-          </div>
-        )
+        content: <TaskList />
       }}
       rightPanel={{
         content: (
