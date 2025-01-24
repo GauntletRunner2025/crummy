@@ -8,12 +8,12 @@ interface AuthCardProps {
 
 const AuthCard = ({ children, title, description }: AuthCardProps) => {
   return (
-    <Card className="w-[380px] auth-card">
-      <CardHeader>
-        <CardTitle className="text-2xl font-semibold">{title}</CardTitle>
-        <CardDescription>{description}</CardDescription>
+    <Card className="content-card">
+      <CardHeader className="content-card-header">
+        <CardTitle className="content-card-title">{title}</CardTitle>
+        <CardDescription className="content-card-description">{description}</CardDescription>
       </CardHeader>
-      <CardContent>{children}</CardContent>
+      <CardContent className="content-card-content">{children}</CardContent>
     </Card>
   );
 };

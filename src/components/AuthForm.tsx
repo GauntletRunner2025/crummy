@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { User, Lock } from "lucide-react";
+import { supabase } from "@/lib/supabase";
 
 interface AuthFormProps {
   isLogin?: boolean;
@@ -12,12 +13,12 @@ interface AuthFormProps {
 }
 
 const sampleUsers = [
-  { email: "admin@example.com", password: "admin123", label: "Admin" },
-  { email: "user@example.com", password: "user123", label: "Basic User" },
-  { email: "test@example.com", password: "test123", label: "Test User" },
-  { email: "demo@example.com", password: "demo123", label: "Demo User" },
-  { email: "guest@example.com", password: "guest123", label: "Guest" },
-  { email: "viewer@example.com", password: "viewer123", label: "Viewer" },
+  { email: "customer1@example.com", password: "password123", label: "Customer 1" },
+  { email: "customer2@example.com", password: "password123", label: "Customer 2" },
+  { email: "agent1@example.com", password: "password123", label: "Agent 1" },
+  { email: "agent2@example.com", password: "password123", label: "Agent 2" },
+  { email: "supervisor@example.com", password: "password123", label: "Supervisor" },
+  { email: "hr@example.com", password: "password123", label: "HR" }
 ];
 
 const AuthForm = ({ isLogin = true, onToggle }: AuthFormProps) => {
@@ -28,11 +29,19 @@ const AuthForm = ({ isLogin = true, onToggle }: AuthFormProps) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!email || !password) {
+      toast.error('Please enter both email and password');
+      return;
+    }
+
     setIsLoading(true);
-    
-    // Simulate auth - replace with real auth later
-    setTimeout(() => {
-      setIsLoading(false);
+    try {
+      const { error } = isLogin
+        ? await supabase.auth.signInWithPassword({ email, password })
+        : await supabase.auth.signUp({ email, password });
+
+      if (error) throw error;
+
       if (isLogin) {
         localStorage.setItem("isAuthenticated", "true");
         toast.success("Successfully logged in!");
@@ -41,7 +50,12 @@ const AuthForm = ({ isLogin = true, onToggle }: AuthFormProps) => {
         toast.success("Account created successfully!");
         onToggle();
       }
-    }, 1000);
+    } catch (error) {
+      console.error('Auth error:', error);
+      toast.error(error.message || 'Authentication failed');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleSampleLogin = (sampleEmail: string, samplePassword: string) => {
@@ -56,14 +70,13 @@ const AuthForm = ({ isLogin = true, onToggle }: AuthFormProps) => {
 
   return (
     <div className="space-y-6">
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-4 w-full max-w-sm">
         <div className="space-y-2">
           <Label htmlFor="email">Email</Label>
           <div className="relative">
             <User className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
             <Input
               id="email"
-              placeholder="Enter your email"
               type="email"
               required
               value={email}
@@ -79,7 +92,6 @@ const AuthForm = ({ isLogin = true, onToggle }: AuthFormProps) => {
             <Input
               id="password"
               type="password"
-              placeholder="Enter your password"
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -87,31 +99,28 @@ const AuthForm = ({ isLogin = true, onToggle }: AuthFormProps) => {
             />
           </div>
         </div>
-        <Button className="w-full" type="submit" disabled={isLoading}>
+        <Button 
+          className="w-full" 
+          type="submit" 
+          disabled={isLoading}
+          variant="secondary"
+        >
           {isLoading ? "Loading..." : isLogin ? "Sign In" : "Create Account"}
         </Button>
       </form>
 
       {isLogin && (
-        <div className="space-y-4">
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t" />
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-background px-2 text-muted-foreground">
-                Sample Accounts
-              </span>
-            </div>
-          </div>
+        <div className="space-y-2">
+          <div className="text-sm text-muted-foreground">Quick Login:</div>
           <div className="grid grid-cols-2 gap-2">
             {sampleUsers.map((user) => (
               <Button
                 key={user.email}
-                type="button"
                 variant="outline"
-                onClick={() => handleSampleLogin(user.email, user.password)}
+                size="sm"
                 className="text-xs"
+                onClick={() => handleSampleLogin(user.email, user.password)}
+                disabled={isLoading}
               >
                 {user.label}
               </Button>
@@ -120,16 +129,16 @@ const AuthForm = ({ isLogin = true, onToggle }: AuthFormProps) => {
         </div>
       )}
 
-      <p className="text-sm text-center text-muted-foreground">
-        {isLogin ? "Don't have an account?" : "Already have an account?"}{" "}
+      <div className="text-sm text-center">
         <button
           type="button"
           onClick={onToggle}
           className="text-primary hover:underline"
+          disabled={isLoading}
         >
-          {isLogin ? "Sign Up" : "Sign In"}
+          {isLogin ? "Need an account? Sign up" : "Already have an account? Sign in"}
         </button>
-      </p>
+      </div>
     </div>
   );
 };

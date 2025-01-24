@@ -1,0 +1,45 @@
+.main-layout {
+  display: flex;
+  flex-wrap: wrap;
+  min-height: 100vh;
+  width: 100%;
+}
+
+.grid-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #e0e0e0;
+  padding: 1rem;
+  box-sizing: border-box;
+}
+
+/* Following the golden ratio (62% / 38%) split between rows */
+.grid-cell-top {
+  width: 33.33%;
+  height: 19vh; /* Half of 38% */
+}
+
+.grid-cell-center {
+  width: 62%;
+  height: 62vh;
+}
+
+.grid-cell-side {
+  width: 19%; /* 38% / 2 for side panels */
+  height: 62vh;
+}
+
+.grid-cell-bottom {
+  width: 33.33%;
+  height: 19vh; /* Half of 38% */
+}
+
+/* Early out for small screens */
+@media (max-width: 768px) {
+  .grid-cell {
+    width: 100% !important;
+    height: auto !important;
+    min-height: 100px;
+  }
+}

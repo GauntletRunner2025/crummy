@@ -6,14 +6,10 @@ const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
+    <div className="page-container">
       <AuthCard
-        title={isLogin ? "Welcome Back" : "Create Account"}
-        description={
-          isLogin
-            ? "Enter your credentials to access your account"
-            : "Sign up for a new account to get started"
-        }
+        title={isLogin ? "Sign In" : "Sign Up"}
+        description=""
       >
         <AuthForm isLogin={isLogin} onToggle={() => setIsLogin(!isLogin)} />
       </AuthCard>
