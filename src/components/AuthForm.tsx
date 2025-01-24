@@ -43,6 +43,7 @@ const AuthForm = ({ isLogin = true, onToggle }: AuthFormProps) => {
       if (error) throw error;
 
       if (isLogin) {
+        localStorage.setItem("isAuthenticated", "true");
         toast.success("Successfully logged in!");
         navigate("/dashboard");
       } else {

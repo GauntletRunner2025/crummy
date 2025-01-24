@@ -21,17 +21,8 @@ const UserProfile = () => {
           return;
         }
 
-        // Get user email from auth.users table
-        const { data: userData, error: userError } = await supabase
-          .from('users')
-          .select('email')
-          .eq('id', session.user.id)
-          .single();
-
-        if (userError) throw userError;
-        if (!userData?.email) throw new Error('No email found for user');
-
-        setEmail(userData.email);
+        // Get user email from session since it's already available
+        setEmail(session.user.email);
       } catch (error) {
         console.error('Error fetching user:', error);
         toast.error('Session expired. Please sign in again');
