@@ -14,9 +14,10 @@ interface AuthFormProps {
 const sampleUsers = [
   { email: "customer1@example.com", password: "customer123", label: "Customer 1" },
   { email: "customer2@example.com", password: "customer123", label: "Customer 2" },
-  { email: "agent1@example.com", password: "agent123", label: "Support Agent 1" },
-  { email: "agent2@example.com", password: "agent123", label: "Support Agent 2" },
+  { email: "agent1@example.com", password: "agent123", label: "Agent 1" },
+  { email: "agent2@example.com", password: "agent123", label: "Agent 2" },
   { email: "supervisor@example.com", password: "supervisor123", label: "Supervisor" },
+  { email: "hr@example.com", password: "hr123", label: "HR" }
 ];
 
 const AuthForm = ({ isLogin = true, onToggle }: AuthFormProps) => {
@@ -62,7 +63,6 @@ const AuthForm = ({ isLogin = true, onToggle }: AuthFormProps) => {
             <User className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
             <Input
               id="email"
-              placeholder="Enter your email"
               type="email"
               required
               value={email}
@@ -78,7 +78,6 @@ const AuthForm = ({ isLogin = true, onToggle }: AuthFormProps) => {
             <Input
               id="password"
               type="password"
-              placeholder="Enter your password"
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -86,14 +85,19 @@ const AuthForm = ({ isLogin = true, onToggle }: AuthFormProps) => {
             />
           </div>
         </div>
-        <Button className="w-full" type="submit" disabled={isLoading}>
+        <Button 
+          className="w-full" 
+          type="submit" 
+          disabled={isLoading}
+          variant="secondary"
+        >
           {isLoading ? "Loading..." : isLogin ? "Sign In" : "Create Account"}
         </Button>
       </form>
 
       {isLogin && (
         <div className="space-y-2">
-          <div className="text-sm text-muted-foreground">Quick Login As:</div>
+          <div className="text-sm text-muted-foreground">Quick Login:</div>
           <div className="grid grid-cols-2 gap-2">
             {sampleUsers.map((user) => (
               <Button
@@ -113,10 +117,10 @@ const AuthForm = ({ isLogin = true, onToggle }: AuthFormProps) => {
             className="w-full text-destructive"
             onClick={() => {
               navigate("/dashboard");
-              toast.error("Access denied! Please log in first.");
+              toast.error("Access denied!");
             }}
           >
-            Try Unauthenticated
+            No Auth
           </Button>
         </div>
       )}
