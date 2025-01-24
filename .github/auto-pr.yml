@@ -1,0 +1,79 @@
+name: Auto Create PR on Branch Creation
+
+on: create
+
+jobs:
+  branch-creation:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Configure Git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Verify branch is from main
+        run: |
+          BASE_BRANCH="main"
+          NEW_BRANCH=${GITHUB_REF#refs/heads/}
+          echo "New branch: $NEW_BRANCH"
+
+          # Fetch the base branch
+          git fetch origin $BASE_BRANCH
+          
+          # Check the merge base
+          BASE_REF=$(git merge-base HEAD origin/$BASE_BRANCH)
+          MAIN_REF=$(git rev-parse origin/$BASE_BRANCH)
+
+          if [ "$BASE_REF" != "$MAIN_REF" ]; then
+            echo "Branch $NEW_BRANCH is not created from $BASE_BRANCH. Exiting."
+            exit 1
+          fi
+
+      - name: Create a dummy change
+        run: |
+          BRANCH_NAME=${GITHUB_REF#refs/heads/}
+          FILE_NAME="$BRANCH_NAME.md"
+
+          echo "# Automated PR for $BRANCH_NAME" > "$FILE_NAME"
+          echo "This file was automatically created to ensure the PR creation workflow runs." >> "$FILE_NAME"
+          echo "Branch: $BRANCH_NAME" >> "$FILE_NAME"
+          echo "Created: $(date)" >> "$FILE_NAME"
+
+          git add "$FILE_NAME"
+          git commit -m "docs: add branch documentation file"
+          git push origin "$BRANCH_NAME"
+
+      - name: Create Pull Request
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          BRANCH_NAME=${GITHUB_REF#refs/heads/}
+          PR_TITLE="Automated PR: Sync $BRANCH_NAME"
+          PR_BODY="This pull request was automatically created to trigger CI/CD workflows.\nBranch: $BRANCH_NAME"
+          API_URL="https://api.github.com/repos/${{ github.repository }}/pulls"
+
+          # Create the pull request
+          curl -s -X POST "$API_URL" \
+            -H "Authorization: token $GITHUB_TOKEN" \
+            -H "Accept: application/vnd.github.v3+json" \
+            -d @- <<EOF
+          {
+            "title": "$PR_TITLE",
+            "head": "$BRANCH_NAME",
+            "base": "main",
+            "body": "$PR_BODY"
+          }
+          EOF
+
+      - name: Set status check
+        run: |
+          curl -s -X POST "https://api.github.com/repos/${{ github.repository }}/statuses/${GITHUB_SHA}" \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            -d '{"state": "success", "context": "auto-pr-complete"}'
