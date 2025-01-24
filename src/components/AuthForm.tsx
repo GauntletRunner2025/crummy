@@ -13,12 +13,12 @@ interface AuthFormProps {
 }
 
 const sampleUsers = [
-  { email: "customer1@example.com", password: "password123", label: "Customer 1" },
-  { email: "customer2@example.com", password: "password123", label: "Customer 2" },
-  { email: "agent1@example.com", password: "password123", label: "Agent 1" },
-  { email: "agent2@example.com", password: "password123", label: "Agent 2" },
-  { email: "supervisor@example.com", password: "password123", label: "Supervisor" },
-  { email: "hr@example.com", password: "password123", label: "HR" }
+  { email: "customer1@example.com", password: "password123", label: "Customer 1", role: "customer" },
+  { email: "customer2@example.com", password: "password123", label: "Customer 2", role: "customer" },
+  { email: "agent1@example.com", password: "password123", label: "Agent 1", role: "agent" },
+  { email: "agent2@example.com", password: "password123", label: "Agent 2", role: "agent" },
+  { email: "supervisor@example.com", password: "password123", label: "Supervisor", role: "supervisor" },
+  { email: "hr@example.com", password: "password123", label: "HR", role: "hr" }
 ];
 
 const AuthForm = ({ isLogin = true, onToggle }: AuthFormProps) => {
@@ -43,7 +43,6 @@ const AuthForm = ({ isLogin = true, onToggle }: AuthFormProps) => {
       if (error) throw error;
 
       if (isLogin) {
-        localStorage.setItem("isAuthenticated", "true");
         toast.success("Successfully logged in!");
         navigate("/dashboard");
       } else {
@@ -100,33 +99,96 @@ const AuthForm = ({ isLogin = true, onToggle }: AuthFormProps) => {
           </div>
         </div>
         <Button 
-          className="w-full" 
-          type="submit" 
+          type="submit"
+          className="w-full"
           disabled={isLoading}
-          variant="secondary"
         >
-          {isLoading ? "Loading..." : isLogin ? "Sign In" : "Create Account"}
+          {isLoading ? "Loading..." : isLogin ? "Sign In" : "Sign Up"}
         </Button>
       </form>
 
       {isLogin && (
-        <div className="space-y-2">
-          <div className="text-sm text-muted-foreground">Quick Login:</div>
-          <div className="grid grid-cols-2 gap-2">
-            {sampleUsers.map((user) => (
-              <Button
-                key={user.email}
-                variant="outline"
-                size="sm"
-                className="text-xs"
-                onClick={() => handleSampleLogin(user.email, user.password)}
-                disabled={isLoading}
-              >
-                {user.label}
-              </Button>
-            ))}
+        <>
+          <div className="relative my-4">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-background px-2 text-muted-foreground">
+                Sample Users
+              </span>
+            </div>
           </div>
-        </div>
+
+          <div className="grid grid-cols-3 gap-4">
+            {/* Customers Column */}
+            <div className="space-y-2">
+              {sampleUsers
+                .filter(user => user.role === "customer")
+                .map((user) => (
+                  <Button
+                    key={user.email}
+                    variant="outline"
+                    className="w-full"
+                    onClick={() => handleSampleLogin(user.email, user.password)}
+                  >
+                    {user.label}
+                  </Button>
+                ))}
+            </div>
+
+            {/* Agents Column */}
+            <div className="space-y-2">
+              {sampleUsers
+                .filter(user => user.role === "agent")
+                .map((user) => (
+                  <Button
+                    key={user.email}
+                    variant="outline"
+                    className="w-full"
+                    onClick={() => handleSampleLogin(user.email, user.password)}
+                  >
+                    {user.label}
+                  </Button>
+                ))}
+            </div>
+
+            {/* Supervisor and HR Column */}
+            <div className="space-y-2">
+              {sampleUsers
+                .filter(user => user.role === "supervisor" || user.role === "hr")
+                .map((user) => (
+                  <Button
+                    key={user.email}
+                    variant="outline"
+                    className="w-full"
+                    onClick={() => handleSampleLogin(user.email, user.password)}
+                  >
+                    {user.label}
+                  </Button>
+                ))}
+            </div>
+          </div>
+
+          <div className="relative my-4">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-background px-2 text-muted-foreground">
+                Test Protection
+              </span>
+            </div>
+          </div>
+
+          <Button
+            variant="secondary"
+            className="w-full"
+            onClick={() => navigate('/dashboard')}
+          >
+            Try Without Login
+          </Button>
+        </>
       )}
 
       <div className="text-sm text-center">
