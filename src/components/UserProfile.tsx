@@ -15,7 +15,6 @@ const UserProfile = () => {
         const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         if (sessionError) throw sessionError;
         if (!session) {
-          localStorage.removeItem('isAuthenticated');
           toast.error('Please sign in to continue');
           navigate('/auth');
           return;
