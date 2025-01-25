@@ -15,7 +15,7 @@ export function TaskButton({ title, isSelected, onClick }: TaskButtonProps) {
       }`}
       onClick={onClick}
     >
-      <div className="truncate">{title}</div>
+      <div className="whitespace-normal text-left">{title}</div>
     </Button>
   );
 }

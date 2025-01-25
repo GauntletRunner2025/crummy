@@ -1,32 +1,38 @@
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+  const location = useLocation();
+  const [session, setSession] = useState(() => supabase.auth.getSession());
+  const [isChecking, setIsChecking] = useState(true);
 
   useEffect(() => {
-    const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      setIsAuthenticated(!!session);
-    };
-    
-    checkAuth();
-
+    // Set up auth state change listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setIsAuthenticated(!!session);
+      if (!session) {
+        // Force navigation on auth loss
+        window.location.href = '/auth';
+      }
+    });
+
+    // Initial auth check
+    supabase.auth.getSession().then((result) => {
+      setSession(result);
+      setIsChecking(false);
     });
 
     return () => subscription.unsubscribe();
   }, []);
 
-  // Show nothing while checking authentication
-  if (isAuthenticated === null) {
+  // Show nothing during initial check
+  if (isChecking) {
     return null;
   }
 
-  if (!isAuthenticated) {
-    return <Navigate to="/auth" replace />;
+  // Redirect if no session
+  if (!session.data.session) {
+    return <Navigate to="/auth" state={{ from: location }} replace />;
   }
 
   return <>{children}</>;
