@@ -1,14 +1,8 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import '@/styles/task-view.css';
-import {
-  Task,
-  DefaultTaskView,
-  OnboardingView,
-  SetDisplayNameView,
-  SetDisplayNameCutesyView,
-  SetDisplayNameAnonymousView
-} from './taskViews';
+import { Task } from './taskViews';
+import { getViewComponent } from './taskViews/registry';
 
 interface TaskViewProps {
   task: Task | null;
@@ -27,6 +21,7 @@ interface DerivedTaskView {
 // Main TaskView component that renders the appropriate view
 export function TaskView({ task, onClose, selectedViewId }: TaskViewProps) {
   const [derivedViews, setDerivedViews] = useState<DerivedTaskView[]>([]);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchDerivedViews = async () => {
@@ -39,6 +34,7 @@ export function TaskView({ task, onClose, selectedViewId }: TaskViewProps) {
 
       if (error) {
         console.error('Error fetching derived views:', error);
+        setError('Failed to load task views');
         return;
       }
 
@@ -50,24 +46,37 @@ export function TaskView({ task, onClose, selectedViewId }: TaskViewProps) {
 
   if (!task) return null;
 
+  if (error) {
+    return (
+      <div className="p-4 text-destructive">
+        {error}
+      </div>
+    );
+  }
+
   // Find the selected view, or use the default view for this task type
   const selectedView = selectedViewId
     ? derivedViews.find(v => v.id === selectedViewId)
     : derivedViews.find(v => v.is_default);
 
-  // Map component names to actual components
-  const viewComponents: Record<string, React.ComponentType<any>> = {
-    'DefaultTaskView': DefaultTaskView,
-    'OnboardingView': OnboardingView,
-    'SetDisplayNameView': SetDisplayNameView,
-    'SetDisplayNameCutesyView': SetDisplayNameCutesyView,
-    'SetDisplayNameAnonymousView': SetDisplayNameAnonymousView,
-  };
+  if (!selectedView) {
+    return (
+      <div className="p-4 text-destructive">
+        Error: No valid view found for this task type
+      </div>
+    );
+  }
 
-  // Get the component to render
-  const ViewComponent = selectedView
-    ? viewComponents[selectedView.component_name]
-    : DefaultTaskView;
+  // Get the component using our registry
+  const ViewComponent = getViewComponent(selectedView.component_name);
+  
+  if (!ViewComponent) {
+    return (
+      <div className="p-4 text-destructive">
+        Error: Component {selectedView.component_name} not found in registry. This indicates a mismatch between database configuration and available components.
+      </div>
+    );
+  }
 
   return (
     <div className="task-view">

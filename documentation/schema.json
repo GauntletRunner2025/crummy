@@ -9,12 +9,6 @@
                                       "name":  "text",
                                       "description":  "text"
                                   },
-                   "onboarding":  {
-                                      "id":  "uuid",
-                                      "email":  "text",
-                                      "created_at":  "timestamptz",
-                                      "status":  "text"
-                                  },
                    "derived_task_views":  {
                                               "id":  "uuid",
                                               "task_type_id":  "text",
@@ -28,17 +22,25 @@
                                       "name":  "text",
                                       "taken":  "bool"
                                   },
+                   "profiles":  {
+                                    "id":  "uuid",
+                                    "display_name":  "text",
+                                    "avatar_url":  "text"
+                                },
+                   "onboarding":  {
+                                      "id":  "uuid",
+                                      "email":  "text",
+                                      "created_at":  "timestamptz",
+                                      "status":  "text",
+                                      "requested_by_email":  "text"
+                                  },
                    "tasks":  {
                                  "id":  "uuid",
                                  "title":  "text",
                                  "assigned_to":  "uuid",
                                  "type_id":  "text",
-                                 "status":  "task_status"
-                             },
-                   "profiles":  {
-                                    "id":  "uuid",
-                                    "display_name":  "text",
-                                    "avatar_url":  "text"
-                                }
+                                 "status":  "task_status",
+                                 "target_id":  "uuid"
+                             }
                }
 }

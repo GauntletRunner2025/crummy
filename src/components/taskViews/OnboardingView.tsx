@@ -1,93 +1,185 @@
-import { useState, useEffect } from "react";
+import React from 'react';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/lib/supabase";
-import { TaskTypeViewProps } from "./types";
+import { BaseTaskView } from './BaseTaskView';
 
-export function OnboardingView({ task, onClose }: TaskTypeViewProps) {
-  const [emailBody, setEmailBody] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [email, setEmail] = useState("");
+interface OnboardingViewState {
+  targetEmail: string;
+  requesterEmail: string;
+  notes: string;
+  isLoading: boolean;
+  isSubmitting: boolean;
+  error: string | null;
+}
 
-  useEffect(() => {
-    // Extract email from task title (format: "New User Onboarding: email@example.com")
-    const emailMatch = task.title.match(/New User Onboarding: (.+@.+)/);
-    if (emailMatch) {
-      setEmail(emailMatch[1]);
-    }
-  }, [task.title]);
+export class OnboardingView extends BaseTaskView<OnboardingViewState> {
+  state: OnboardingViewState = {
+    targetEmail: "",
+    requesterEmail: "",
+    notes: "",
+    isSubmitting: false,
+    isLoading: true,
+    error: null
+  };
 
-  const handleSubmit = async () => {
-    if (!emailBody.trim()) {
+  async componentDidMount() {
+    await this.loadOnboardingDetails();
+  }
+
+  private async loadOnboardingDetails() {
+    if (!this.props.task?.target_id) {
+      this.setState({ 
+        isLoading: false,
+        error: 'Invalid onboarding task: missing target ID'
+      });
       return;
     }
 
-    setIsSubmitting(true);
     try {
-      // Update task status
-      const { error: taskError } = await supabase
-        .from('tasks')
-        .update({ status: 'Complete' })
-        .eq('id', task.id);
-
-      if (taskError) throw taskError;
-
-      // Update onboarding status
-      const { error: onboardingError } = await supabase
+      const { data, error } = await supabase
         .from('onboarding')
-        .update({ status: 'invited' })
-        .eq('email', email);
+        .select('email, requested_by_email')
+        .eq('id', this.props.task.target_id)
+        .single();
 
-      if (onboardingError) throw onboardingError;
-
-      // TODO: Send email invitation (will be implemented in a separate Edge function)
+      if (error) throw error;
       
-      onClose();
+      if (!data?.email) {
+        throw new Error('Onboarding record is missing email');
+      }
+
+      this.setState({
+        targetEmail: data.email,
+        requesterEmail: data.requested_by_email || "",
+        error: null
+      });
+    } catch (error) {
+      console.error('Failed to load onboarding details:', error);
+      this.setState({ 
+        error: 'Failed to load onboarding details' 
+      });
+    } finally {
+      this.setState({ isLoading: false });
+    }
+  }
+
+  private async handleSubmit(): Promise<void> {
+    const { notes } = this.state;
+    const { task } = this.props;
+    
+    if (!notes?.trim()) {
+      this.setState({ error: 'Please enter onboarding notes' });
+      return;
+    }
+
+    if (!task?.target_id) {
+      this.setState({ error: 'Invalid task: missing target ID' });
+      return;
+    }
+
+    this.setState({ isSubmitting: true, error: null });
+    
+    try {
+      // First complete the base task
+      await this.completeTask();
+
+      // Then handle onboarding-specific updates
+      const { error } = await supabase
+        .from('onboarding')
+        .update({ 
+          status: 'processed',
+          notes: notes.trim()
+        })
+        .eq('id', task.target_id);
+
+      if (error) throw error;
     } catch (error) {
       console.error('Failed to process onboarding:', error);
+      this.setState({ 
+        error: 'Failed to process onboarding. Please try again.' 
+      });
     } finally {
-      setIsSubmitting(false);
+      this.setState({ isSubmitting: false });
     }
-  };
+  }
 
-  return (
-    <div className="space-y-4 p-4">
-      <div className="space-y-2">
-        <label className="text-sm font-medium">Email Address</label>
-        <Input
-          value={email}
-          readOnly
-          className="bg-muted"
-        />
-      </div>
+  protected renderContent(): React.ReactNode {
+    const { isLoading, isSubmitting, targetEmail, requesterEmail, notes, error } = this.state;
 
-      <div className="space-y-2">
-        <label className="text-sm font-medium">Invitation Message</label>
-        <Textarea
-          value={emailBody}
-          onChange={(e) => setEmailBody(e.target.value)}
-          placeholder="Enter your invitation message here..."
-          className="min-h-[200px]"
-        />
-      </div>
+    if (isLoading) {
+      return (
+        <div className="task-view-content text-muted-foreground">
+          Loading onboarding details...
+        </div>
+      );
+    }
 
-      <div className="flex justify-end gap-2">
-        <Button
-          variant="outline"
-          onClick={onClose}
-        >
-          <X className="h-4 w-4 mr-2" />
-          Cancel
-        </Button>
-        <Button
-          onClick={handleSubmit}
-          disabled={isSubmitting || !emailBody.trim()}
-        >
-          Invite User
-        </Button>
+    if (error) {
+      return (
+        <div className="task-view-content text-destructive">
+          {error}
+        </div>
+      );
+    }
+
+    return (
+      <div className="task-view-content space-y-4">
+        <div className="space-y-4">
+          <h3 className="text-lg font-medium">New User Onboarding</h3>
+
+          <div className="grid gap-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Target Email</label>
+              <Input
+                value={targetEmail}
+                readOnly
+                className="bg-muted"
+              />
+            </div>
+
+            {requesterEmail && (
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Requested By</label>
+                <Input
+                  value={requesterEmail}
+                  readOnly
+                  className="bg-muted"
+                />
+              </div>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Onboarding Notes</label>
+            <Textarea
+              value={notes}
+              onChange={(e) => this.setState({ notes: e.target.value, error: null })}
+              placeholder="Enter any notes about the onboarding process..."
+              className="min-h-[200px]"
+            />
+          </div>
+        </div>
+
+        <div className="flex justify-end gap-2">
+          <Button
+            variant="outline"
+            onClick={this.props.onClose}
+            disabled={isSubmitting}
+          >
+            <X className="h-4 w-4 mr-2" />
+            Cancel
+          </Button>
+          <Button
+            onClick={() => this.handleSubmit()}
+            disabled={isSubmitting || !notes?.trim()}
+          >
+            {isSubmitting ? "Processing..." : "Complete Onboarding"}
+          </Button>
+        </div>
       </div>
-    </div>
-  );
+    );
+  }
 }

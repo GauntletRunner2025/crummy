@@ -3,19 +3,7 @@ import { TaskButton } from './TaskButton';
 import { supabase } from '@/lib/supabase';
 import { Separator } from './ui/separator';
 import '@/styles/task-list.css';
-
-interface Task {
-  id: string;
-  title: string;
-  type_id: string;
-  assigned_to: string | null;
-  status: 'Open' | 'Complete';
-  task_type: {
-    id: string;
-    name: string;
-    description: string;
-  };
-}
+import { Task } from './taskViews/types';
 
 interface TaskListProps {
   selectedTask: Task | null;
@@ -39,6 +27,7 @@ export function TaskList({ selectedTask, onTaskSelect }: TaskListProps) {
           title,
           assigned_to,
           type_id,
+          target_id,
           status,
           task_type:task_types(*)
         `)
