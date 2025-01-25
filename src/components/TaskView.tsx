@@ -1,4 +1,3 @@
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
@@ -6,12 +5,15 @@ import { useState } from "react";
 import { supabase } from "@/lib/supabase";
 import '@/styles/task-view.css';
 
-type TaskType = 'SetDisplayName' | 'Default';
-
 interface Task {
   id: string;
   title: string;
-  type: TaskType;
+  type_id: string;
+  task_type: {
+    id: string;
+    name: string;
+    description: string;
+  };
 }
 
 interface TaskViewProps {
@@ -42,10 +44,10 @@ function TaskTypeView({ task, onClose, children }: TaskTypeViewProps & { childre
 
   return (
     <div className="task-view-container">
-      <Card className="task-view-card">
-        <CardHeader className="task-view-header">
+      <div className="task-view-card">
+        <header className="task-view-header">
           <div className="flex justify-between items-center">
-            <CardTitle className="task-view-title">{task.title}</CardTitle>
+            <h1 className="task-view-title">{task.title}</h1>
             <Button
               variant="ghost"
               size="icon"
@@ -55,11 +57,11 @@ function TaskTypeView({ task, onClose, children }: TaskTypeViewProps & { childre
               <X className="h-4 w-4" />
             </Button>
           </div>
-        </CardHeader>
-        <CardContent className="task-view-content">
+        </header>
+        <div className="task-view-content">
           {children}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 }
@@ -138,7 +140,7 @@ export function TaskView({ task, onClose }: TaskViewProps) {
     );
   }
 
-  return task.type === 'SetDisplayName' ? (
+  return task.type_id === 'SetDisplayName' ? (
     <SetDisplayNameView task={task} onClose={onClose} />
   ) : (
     <DefaultTaskView task={task} onClose={onClose} />

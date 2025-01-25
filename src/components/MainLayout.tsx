@@ -21,7 +21,7 @@ interface MainLayoutProps {
   bottomRight?: GridSlot;
 }
 
-const MainLayout: React.FC<MainLayoutProps> = ({
+export default function MainLayout({
   topLeft,
   topCenter,
   topRight,
@@ -31,7 +31,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({
   bottomLeft,
   bottomCenter,
   bottomRight,
-}) => {
+}: MainLayoutProps) {
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -76,6 +76,4 @@ const MainLayout: React.FC<MainLayoutProps> = ({
       </div>
     </div>
   );
-};
-
-export default MainLayout;
+}

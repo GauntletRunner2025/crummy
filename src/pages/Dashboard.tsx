@@ -1,14 +1,14 @@
-import { Card } from "@/components/ui/card";
 import MainLayout from "@/components/MainLayout";
-import LogoutButton from "@/components/LogoutButton";
-import UserProfile from "@/components/UserProfile";
 import { TaskList } from "@/components/TaskList";
 import { TaskView } from "@/components/TaskView";
+import { ActionList } from '@/components/ActionList';
+import { Profile } from '@/components/Profile';
 import { useState } from 'react';
 
 interface SelectedTask {
   id: string;
   title: string;
+  type_id: string;
 }
 
 export default function Dashboard() {
@@ -16,15 +16,10 @@ export default function Dashboard() {
 
   return (
     <MainLayout
-      topCenter={{
-        content: (
-          <div className="text-center">
-            <h1 className="text-3xl font-bold">Dashboard</h1>
-          </div>
-        )
-      }}
       topRight={{
-        content: <LogoutButton />
+        content: (
+          <Profile />
+        )
       }}
       leftPanel={{
         content: (
@@ -44,9 +39,7 @@ export default function Dashboard() {
       }}
       rightPanel={{
         content: (
-          <div>
-            <h2 className="text-xl font-semibold">Quick Actions</h2>
-          </div>
+          <ActionList taskTypeId={selectedTask?.type_id || null} />
         )
       }}
       bottomLeft={{
