@@ -9,6 +9,7 @@ interface Task {
   title: string;
   type_id: string;
   assigned_to: string | null;
+  status: 'Open' | 'Complete';
   task_type: {
     id: string;
     name: string;
@@ -38,8 +39,10 @@ export function TaskList({ selectedTask, onTaskSelect }: TaskListProps) {
           title,
           assigned_to,
           type_id,
+          status,
           task_type:task_types(*)
-        `);
+        `)
+        .eq('status', 'Open');
 
       if (error) throw error;
 

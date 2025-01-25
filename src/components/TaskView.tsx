@@ -1,6 +1,6 @@
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { X } from "lucide-react";
+import { X, Dice6 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import '@/styles/task-view.css';
@@ -31,13 +31,17 @@ interface TaskViewProps {
 }
 
 interface TaskTypeViewProps {
-  task: Task;
+  task: {
+    id: string;
+    title: string;
+    type_id: string;
+  };
   onClose: () => void;
 }
 
-// Base SetDisplayName component with common functionality
-function BaseSetDisplayNameView({ task, onClose, initialValue = '', children }: TaskTypeViewProps & { initialValue?: string; children?: React.ReactNode }) {
-  const [displayName, setDisplayName] = useState(initialValue);
+// Default SetDisplayName view
+function SetDisplayNameView({ task, onClose }: TaskTypeViewProps) {
+  const [displayName, setDisplayName] = useState("");
   const [isUpdating, setIsUpdating] = useState(false);
 
   const handleSubmit = async () => {
@@ -49,6 +53,7 @@ function BaseSetDisplayNameView({ task, onClose, initialValue = '', children }: 
       if (userError) throw userError;
       if (!user) throw new Error('No user found');
 
+      console.log('Updating profile display name...');
       const { error: profileError } = await supabase
         .from('profiles')
         .update({ display_name: displayName })
@@ -56,12 +61,19 @@ function BaseSetDisplayNameView({ task, onClose, initialValue = '', children }: 
 
       if (profileError) throw profileError;
 
-      const { error: taskError } = await supabase
+      console.log('Marking task as complete...');
+      const { data: taskData, error: taskError } = await supabase
         .from('tasks')
-        .delete()
-        .eq('id', task.id);
+        .update({ status: 'Complete' })
+        .eq('id', task.id)
+        .select()
+        .single();
 
-      if (taskError) throw taskError;
+      if (taskError) {
+        console.error('Error updating task status:', taskError);
+        throw taskError;
+      }
+      console.log('Task updated:', taskData);
 
       onClose();
     } catch (error) {
@@ -72,77 +84,210 @@ function BaseSetDisplayNameView({ task, onClose, initialValue = '', children }: 
   };
 
   return (
-    <div className="task-view-container">
-      <div className="task-view-card">
-        <header className="task-view-header">
-          <div className="flex justify-between items-center">
-            <h1 className="task-view-title">{task.title}</h1>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={onClose}
-              className="h-8 w-8"
-            >
-              <X className="h-4 w-4" />
-            </Button>
-          </div>
-        </header>
-        <div className="task-view-content">
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <label htmlFor="displayName" className="text-sm font-medium">
-                Display Name
-              </label>
-              <Input
-                id="displayName"
-                value={displayName}
-                onChange={(e) => setDisplayName(e.target.value)}
-                placeholder="Enter your display name"
-              />
-            </div>
-            {children}
-            <Button 
-              onClick={handleSubmit}
-              disabled={isUpdating || !displayName.trim()}
-            >
-              {isUpdating ? 'Updating...' : 'Update Display Name'}
-            </Button>
-          </div>
-        </div>
+    <div className="space-y-4">
+      <div className="space-y-2">
+        <p className="text-sm text-gray-500">
+          Choose a display name for yourself
+        </p>
+        <Input
+          value={displayName}
+          onChange={(e) => setDisplayName(e.target.value)}
+          placeholder="Enter your display name"
+        />
+      </div>
+      <div className="flex justify-end gap-2">
+        <Button variant="outline" onClick={onClose} disabled={isUpdating}>
+          <X className="h-4 w-4 mr-2" />
+          Cancel
+        </Button>
+        <Button onClick={handleSubmit} disabled={!displayName.trim() || isUpdating}>
+          {isUpdating ? "Updating..." : "Update Display Name"}
+        </Button>
       </div>
     </div>
   );
 }
 
-// Default SetDisplayName view
-function SetDisplayNameView(props: TaskTypeViewProps) {
-  return <BaseSetDisplayNameView {...props} />;
-}
+// Cutesy SetDisplayName view
+function SetDisplayNameCutesyView({ task, onClose }: TaskTypeViewProps) {
+  const [cuteName, setCuteName] = useState<string>("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
 
-// Anonymous SetDisplayName view
-function SetDisplayNameAnonymousView(props: TaskTypeViewProps) {
+  const fetchRandomCuteName = async () => {
+    setIsLoading(true);
+    try {
+      // Get a random untaken name using our stored procedure
+      const { data, error } = await supabase
+        .rpc('get_random_untaken_cute_name');
+
+      if (error) throw error;
+      if (!data || data.length === 0) throw new Error('No cute names available');
+
+      setCuteName(data[0].name);
+    } catch (error) {
+      console.error('Error fetching cute name:', error);
+      // Fallback to a default cute name if something goes wrong
+      setCuteName('★ Cutie ★');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleSubmit = async () => {
+    if (!cuteName.trim()) return;
+    
+    setIsUpdating(true);
+    try {
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError) throw userError;
+      if (!user) throw new Error('No user found');
+
+      // Mark the cute name as taken
+      const { data: cuteNameData } = await supabase
+        .from('cute_names')
+        .select('id')
+        .eq('name', cuteName)
+        .single();
+
+      if (cuteNameData) {
+        const { error: updateError } = await supabase
+          .from('cute_names')
+          .update({ taken: true })
+          .eq('id', cuteNameData.id);
+
+        if (updateError) throw updateError;
+      }
+
+      console.log('Updating profile display name...');
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .update({ display_name: cuteName })
+        .eq('id', user.id);
+
+      if (profileError) throw profileError;
+
+      console.log('Marking task as complete...');
+      const { data: taskData, error: taskError } = await supabase
+        .from('tasks')
+        .update({ status: 'Complete' })
+        .eq('id', task.id)
+        .select()
+        .single();
+
+      if (taskError) {
+        console.error('Error updating task status:', taskError);
+        throw taskError;
+      }
+      console.log('Task updated:', taskData);
+
+      onClose();
+    } catch (error) {
+      console.error('Error updating display name:', error);
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  // Fetch a random name when the component mounts
+  useEffect(() => {
+    fetchRandomCuteName();
+  }, []);
+
   return (
-    <BaseSetDisplayNameView {...props} initialValue="Anonymous_">
-      <p className="text-sm text-gray-500">
-        Your display name will be prefixed with "Anonymous_"
-      </p>
-    </BaseSetDisplayNameView>
+    <div className="space-y-4">
+      <div className="space-y-2">
+        <p className="text-sm text-gray-500">
+          Choose a cute display name decorated with adorable symbols!
+        </p>
+        <div className="flex items-center gap-2">
+          <Input
+            value={cuteName}
+            readOnly
+            placeholder="Loading cute name..."
+            disabled={isLoading}
+          />
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={fetchRandomCuteName}
+            disabled={isLoading || isUpdating}
+            title="Roll for a new cute name"
+          >
+            <Dice6 className="h-4 w-4" />
+          </Button>
+        </div>
+      </div>
+      <div className="flex justify-end gap-2">
+        <Button variant="outline" onClick={onClose} disabled={isUpdating}>
+          <X className="h-4 w-4 mr-2" />
+          Cancel
+        </Button>
+        <Button onClick={handleSubmit} disabled={!cuteName.trim() || isUpdating || isLoading}>
+          {isUpdating ? "Updating..." : "Update Display Name"}
+        </Button>
+      </div>
+    </div>
   );
 }
 
-// Cutesy SetDisplayName view
-function SetDisplayNameCutesyView(props: TaskTypeViewProps) {
+// Anonymous SetDisplayName view
+function SetDisplayNameAnonymousView({ task, onClose }: TaskTypeViewProps) {
+  const [displayName, setDisplayName] = useState("Anonymous_");
+  const [isUpdating, setIsUpdating] = useState(false);
+
+  const handleSubmit = async () => {
+    setIsUpdating(true);
+    try {
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError) throw userError;
+      if (!user) throw new Error('No user found');
+
+      console.log('Updating profile display name...');
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .update({ display_name: displayName })
+        .eq('id', user.id);
+
+      if (profileError) throw profileError;
+
+      console.log('Marking task as complete...');
+      const { data: taskData, error: taskError } = await supabase
+        .from('tasks')
+        .update({ status: 'Complete' })
+        .eq('id', task.id)
+        .select()
+        .single();
+
+      if (taskError) {
+        console.error('Error updating task status:', taskError);
+        throw taskError;
+      }
+      console.log('Task updated:', taskData);
+
+      onClose();
+    } catch (error) {
+      console.error('Error updating display name:', error);
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
   return (
-    <BaseSetDisplayNameView {...props} initialValue="★ ">
-      <div className="space-y-2">
-        <p className="text-sm text-gray-500">
-          Your display name will be decorated with cute symbols ★彡
-        </p>
-        <div className="text-sm">
-          Preview: <span className="font-medium">★ {props.task.title} 彡</span>
-        </div>
+    <div className="space-y-4">
+      <p className="text-sm text-gray-500">
+        Your display name will be prefixed with "Anonymous_"
+      </p>
+      <div className="flex justify-end gap-2">
+        <Button variant="outline" onClick={onClose} disabled={isUpdating}>
+          <X className="h-4 w-4 mr-2" />
+          Cancel
+        </Button>
+        <Button onClick={handleSubmit} disabled={isUpdating}>
+          {isUpdating ? "Updating..." : "Update Display Name"}
+        </Button>
       </div>
-    </BaseSetDisplayNameView>
+    </div>
   );
 }
 
