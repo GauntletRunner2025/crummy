@@ -1,3 +1,4 @@
+Remember this is a React app, so directly manipulating the DOM is not what we want. Do it the React way.
 Rather than modifying existing .sql migration scripts, prefer to make changes via a new file. This will help with changes being effected via suprabase migration up. Just changing how the table was created in the first place, for example, is not what we want. 
 
 We are using Typescript, so if you cant find a file, we may be using a .ts version of it. For example tailwind.config.ts.
