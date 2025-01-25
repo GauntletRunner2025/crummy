@@ -3,6 +3,45 @@
                    "roles":  {
                                  "id":  "uuid",
                                  "role":  "user_role"
-                             }
+                             },
+                   "task_types":  {
+                                      "id":  "text",
+                                      "name":  "text",
+                                      "description":  "text"
+                                  },
+                   "derived_task_views":  {
+                                              "id":  "uuid",
+                                              "task_type_id":  "text",
+                                              "name":  "text",
+                                              "component_name":  "text",
+                                              "is_default":  "bool",
+                                              "description":  "text"
+                                          },
+                   "cute_names":  {
+                                      "id":  "uuid",
+                                      "name":  "text",
+                                      "taken":  "bool"
+                                  },
+                   "profiles":  {
+                                    "id":  "uuid",
+                                    "display_name":  "text",
+                                    "avatar_url":  "text"
+                                },
+                   "tasks":  {
+                                 "id":  "uuid",
+                                 "title":  "text",
+                                 "assigned_to":  "uuid",
+                                 "type_id":  "text",
+                                 "status":  "task_status",
+                                 "target_id":  "uuid"
+                             },
+                   "onboarding":  {
+                                      "id":  "uuid",
+                                      "email":  "text",
+                                      "created_at":  "timestamptz",
+                                      "status":  "text",
+                                      "requested_by_email":  "text",
+                                      "approved":  "bool"
+                                  }
                }
 }

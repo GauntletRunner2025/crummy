@@ -1,36 +1,57 @@
-import { Card } from "@/components/ui/card";
-import NineGridLayout from "@/components/NineGridLayout";
-import LogoutButton from "@/components/LogoutButton";
-import UserProfile from "@/components/UserProfile";
+import MainLayout from "@/components/MainLayout";
+import { TaskList } from "@/components/TaskList";
+import { TaskView } from "@/components/TaskView";
+import { Profile } from '@/components/Profile';
+import { DerivedViewsList } from '@/components/DerivedViewsList';
+import { useState } from 'react';
 
-const Dashboard = () => {
+interface SelectedTask {
+  id: string;
+  title: string;
+  type_id: string;
+}
+
+export default function Dashboard() {
+  const [selectedTask, setSelectedTask] = useState<SelectedTask | null>(null);
+  const [selectedViewId, setSelectedViewId] = useState<string | null>(null);
+
   return (
-    <NineGridLayout
-      topLeft={{
-        content: <UserProfile />
-      }}
-      topCenter={{
-        content: (
-          <div className="text-center">
-            <h1 className="text-3xl font-bold">Dashboard</h1>
-          </div>
-        )
-      }}
+    <MainLayout
       topRight={{
-        content: <LogoutButton />
+        content: (
+          <Profile />
+        )
       }}
       leftPanel={{
         content: (
-          <div>
-            <h2 className="text-xl font-semibold">Navigation</h2>
-          </div>
+          <TaskList 
+            selectedTask={selectedTask} 
+            onTaskSelect={(task) => {
+              setSelectedTask(task);
+              setSelectedViewId(null); // Reset view selection when task changes
+            }}
+          />
+        )
+      }}
+      mainContent={{
+        content: (
+          <TaskView 
+            task={selectedTask} 
+            onClose={() => {
+              setSelectedTask(null);
+              setSelectedViewId(null);
+            }}
+            selectedViewId={selectedViewId}
+          />
         )
       }}
       rightPanel={{
         content: (
-          <div>
-            <h2 className="text-xl font-semibold">Quick Actions</h2>
-          </div>
+          <DerivedViewsList
+            selectedTask={selectedTask}
+            onViewSelect={setSelectedViewId}
+            selectedViewId={selectedViewId}
+          />
         )
       }}
       bottomLeft={{
@@ -57,5 +78,3 @@ const Dashboard = () => {
     />
   );
 };
-
-export default Dashboard;

@@ -1,0 +1,27 @@
+.grid-layout {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: auto 1fr auto;
+  gap: 1rem;
+  width: 100%;
+  height: 100vh;
+}
+
+.grid-cell {
+  position: relative;
+  background-color: white;
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.grid-cell-top {
+  min-height: 4rem;
+}
+
+.grid-cell-side {
+  min-width: 12rem;
+}
+
+.grid-cell-center {
+  min-width: 24rem;
+}

@@ -1,0 +1,20 @@
+.task-list {
+  @apply flex flex-col h-full w-full;
+}
+
+.task-list-content {
+  @apply flex flex-col h-full w-full overflow-y-auto;
+}
+
+/* Add divider between tasks except for the last one */
+.task-list-content > button:not(:last-child) {
+  @apply border-b;
+}
+
+.task-list-title {
+  @apply text-xl font-semibold px-2 py-3;
+}
+
+.task-card {
+  @apply px-4 py-2 transition-all hover:bg-accent text-left rounded-none border-0;
+}

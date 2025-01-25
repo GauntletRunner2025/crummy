@@ -1,3 +1,8 @@
+Remember this is a React app, so directly manipulating the DOM is not what we want. Do it the React way.
+Rather than modifying existing .sql migration scripts, prefer to make changes via a new file. This will help with changes being effected via suprabase migration up. Just changing how the table was created in the first place, for example, is not what we want. 
+
+We are using Typescript, so if you cant find a file, we may be using a .ts version of it. For example tailwind.config.ts.
+
 Remember that we are sometimes in different environments. The database might be on localhost, or connecting to the supabase.co server. The supabase url might need to point to 127.0.0.1:54321 or the commands we're running in the terminal (Eg. npx supabase start) might be heading out to the server in the cloud instead of our local one. This has been a problem before.
 
 When designing UI, try and go with the golden ratio. 62% for the larger portion, 38% for the smaller portion. Smaller portions can be subdivided, but they should be subdivided equally, and not have their own golden ratios. Meaning two sections of 19% each.
