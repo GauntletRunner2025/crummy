@@ -4,6 +4,7 @@ import { X, Dice6 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import '@/styles/task-view.css';
+import { Textarea } from "@/components/ui/textarea";
 
 interface Task {
   id: string;
@@ -316,6 +317,88 @@ function DefaultTaskView({ task, onClose }: TaskTypeViewProps) {
   );
 }
 
+// Onboarding view
+function OnboardingView({ task, onClose }: TaskTypeViewProps) {
+  const [email, setEmail] = useState<string>("");
+  const [notes, setNotes] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchOnboardingData = async () => {
+      try {
+        // Get the onboarding record for this task
+        const { data: onboardingData, error: onboardingError } = await supabase
+          .from('onboarding')
+          .select('email')
+          .eq('status', 'pending')
+          .single();
+
+        if (onboardingError) throw onboardingError;
+        if (!onboardingData) throw new Error('No onboarding data found');
+
+        setEmail(onboardingData.email);
+      } catch (error) {
+        console.error('Error fetching onboarding data:', error);
+        setEmail('Error loading email');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchOnboardingData();
+  }, []);
+
+  const handleSubmit = async () => {
+    // TODO: Implement onboarding submission
+    console.log('Onboarding notes:', notes);
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="space-y-2">
+        <p className="text-sm text-gray-500">
+          Review and process the new user onboarding
+        </p>
+        <div className="space-y-4">
+          <div>
+            <label htmlFor="email" className="text-sm font-medium">
+              User Email
+            </label>
+            <Input
+              id="email"
+              value={email}
+              readOnly
+              disabled={isLoading}
+              placeholder="Loading email..."
+            />
+          </div>
+          <div>
+            <label htmlFor="notes" className="text-sm font-medium">
+              Onboarding Notes
+            </label>
+            <Textarea
+              id="notes"
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              placeholder="Enter any notes about the onboarding process..."
+              className="min-h-[150px]"
+            />
+          </div>
+        </div>
+      </div>
+      <div className="flex justify-end gap-2">
+        <Button variant="outline" onClick={onClose}>
+          <X className="h-4 w-4 mr-2" />
+          Cancel
+        </Button>
+        <Button onClick={handleSubmit}>
+          Submit
+        </Button>
+      </div>
+    </div>
+  );
+}
+
 // Main TaskView component that renders the appropriate view
 export function TaskView({ task, onClose, selectedViewId }: TaskViewProps) {
   const [derivedViews, setDerivedViews] = useState<DerivedTaskView[]>([]);
@@ -349,6 +432,7 @@ export function TaskView({ task, onClose, selectedViewId }: TaskViewProps) {
     SetDisplayNameView,
     SetDisplayNameAnonymousView,
     SetDisplayNameCutesyView,
+    OnboardingView,
     // Add other view components here
   };
 

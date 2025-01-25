@@ -4,42 +4,41 @@
                                  "id":  "uuid",
                                  "role":  "user_role"
                              },
-                   "tasks":  {
-                                 "id":  "uuid",
-                                 "title":  "text",
-                                 "assigned_to":  "uuid",
-                                 "type_id":  "text"
-                             },
                    "task_types":  {
                                       "id":  "text",
                                       "name":  "text",
                                       "description":  "text"
                                   },
-                   "actions":  {
-                                   "id":  "uuid",
-                                   "task_type_id":  "text",
-                                   "name":  "text",
-                                   "description":  "text",
-                                   "action_data":  "jsonb"
-                               },
+                   "onboarding":  {
+                                      "id":  "uuid",
+                                      "email":  "text",
+                                      "created_at":  "timestamptz",
+                                      "status":  "text"
+                                  },
+                   "derived_task_views":  {
+                                              "id":  "uuid",
+                                              "task_type_id":  "text",
+                                              "name":  "text",
+                                              "component_name":  "text",
+                                              "is_default":  "bool",
+                                              "description":  "text"
+                                          },
+                   "cute_names":  {
+                                      "id":  "uuid",
+                                      "name":  "text",
+                                      "taken":  "bool"
+                                  },
+                   "tasks":  {
+                                 "id":  "uuid",
+                                 "title":  "text",
+                                 "assigned_to":  "uuid",
+                                 "type_id":  "text",
+                                 "status":  "task_status"
+                             },
                    "profiles":  {
                                     "id":  "uuid",
                                     "display_name":  "text",
                                     "avatar_url":  "text"
-                                },
-                   "onboarding":  {
-                                      "id":  "uuid",
-                                      "user_id":  "uuid",
-                                      "role":  "text",
-                                      "created_at":  "timestamptz"
-                                  },
-                   "action_templates":  {
-                                            "id":  "uuid",
-                                            "name":  "text",
-                                            "description":  "text",
-                                            "processor_function":  "text",
-                                            "is_active":  "bool",
-                                            "task_type":  "text"
-                                        }
+                                }
                }
 }
