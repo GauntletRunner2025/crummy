@@ -71,11 +71,6 @@ export class OnboardingView extends BaseTaskView<OnboardingViewState> {
     const { notes } = this.state;
     const { task } = this.props;
     
-    if (!notes?.trim()) {
-      this.setState({ error: 'Please enter onboarding notes' });
-      return;
-    }
-
     if (!task?.target_id) {
       this.setState({ error: 'Invalid task: missing target ID' });
       return;
@@ -181,7 +176,7 @@ export class OnboardingView extends BaseTaskView<OnboardingViewState> {
           </Button>
           <Button
             onClick={() => this.handleSubmit()}
-            disabled={isSubmitting || !notes?.trim()}
+            disabled={isSubmitting}
           >
             {isSubmitting ? "Processing..." : "Complete Onboarding"}
           </Button>
