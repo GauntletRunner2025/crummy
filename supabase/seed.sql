@@ -5,6 +5,6 @@ insert into public.onboarding (
     status
 ) values (
     '00000000-0000-4000-b000-000000000001',  -- Use a deterministic UUID for seeding
-    'newhire@example.com',
+    'tom.andrys@gauntletai.com',
     'pending'
 ) on conflict (email) do nothing;

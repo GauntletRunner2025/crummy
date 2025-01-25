@@ -87,15 +87,22 @@ export class OnboardingView extends BaseTaskView<OnboardingViewState> {
       await this.completeTask();
 
       // Then handle onboarding-specific updates
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('onboarding')
         .update({ 
           status: 'processed',
-          notes: notes.trim()
+          notes: notes.trim(),
+          approved: true
         })
-        .eq('id', task.target_id);
+        .eq('id', task.target_id)
+        .select();  // Add select to get back the updated row
 
-      if (error) throw error;
+      if (error) {
+        console.error('Failed to update onboarding:', error);
+        throw error;
+      }
+
+      console.log('Updated onboarding record:', data);
     } catch (error) {
       console.error('Failed to process onboarding:', error);
       this.setState({ 

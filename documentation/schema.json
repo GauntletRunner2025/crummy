@@ -27,13 +27,6 @@
                                     "display_name":  "text",
                                     "avatar_url":  "text"
                                 },
-                   "onboarding":  {
-                                      "id":  "uuid",
-                                      "email":  "text",
-                                      "created_at":  "timestamptz",
-                                      "status":  "text",
-                                      "requested_by_email":  "text"
-                                  },
                    "tasks":  {
                                  "id":  "uuid",
                                  "title":  "text",
@@ -41,6 +34,14 @@
                                  "type_id":  "text",
                                  "status":  "task_status",
                                  "target_id":  "uuid"
-                             }
+                             },
+                   "onboarding":  {
+                                      "id":  "uuid",
+                                      "email":  "text",
+                                      "created_at":  "timestamptz",
+                                      "status":  "text",
+                                      "requested_by_email":  "text",
+                                      "approved":  "bool"
+                                  }
                }
 }
