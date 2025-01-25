@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
+import { Button } from '@/components/ui/button';
 
 interface DerivedView {
   id: string;
@@ -69,26 +70,35 @@ export function DerivedViewsList({ selectedTask, onViewSelect, selectedViewId }:
   }
 
   if (derivedViews.length === 0) {
-    return <div className="p-4 text-gray-500">No views available for this task type.</div>;
+    return <div className="p-4 text-muted-foreground">No views available for this task type.</div>;
   }
 
   return (
-    <div className="flex flex-col gap-2 p-4">
-      <h3 className="text-lg font-semibold mb-2">Available Views</h3>
-      {derivedViews.map((view) => (
-        <button
-          key={view.id}
-          onClick={() => onViewSelect(view.id)}
-          className={`flex flex-col items-start p-3 rounded-lg border border-gray-200 hover:border-blue-500 hover:bg-blue-50 transition-colors ${
-            selectedViewId === view.id ? 'border-blue-500 bg-blue-50' : ''
-          }`}
-        >
-          <span className="font-medium">{view.name}</span>
-          {view.description && (
-            <span className="text-sm text-gray-600">{view.description}</span>
-          )}
-        </button>
-      ))}
+    <div className="h-full">
+      <div className="px-2 py-1 font-medium text-sm text-muted-foreground">
+        Quick Actions
+      </div>
+      <div>
+        {derivedViews.map((view) => (
+          <Button
+            key={view.id}
+            variant="ghost"
+            className={`w-full rounded-none h-auto px-2 py-2 justify-start hover:bg-accent ${
+              selectedViewId === view.id ? "bg-accent" : ""
+            }`}
+            onClick={() => onViewSelect(view.id)}
+          >
+            <div className="flex flex-col items-start w-full overflow-hidden">
+              <div className="truncate font-medium w-full">{view.name}</div>
+              {view.description && (
+                <div className="text-sm text-muted-foreground whitespace-normal break-words w-full">
+                  {view.description}
+                </div>
+              )}
+            </div>
+          </Button>
+        ))}
+      </div>
     </div>
   );
 }
