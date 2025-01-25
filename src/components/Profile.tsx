@@ -5,6 +5,7 @@ import { supabase } from '@/lib/supabase';
 
 interface UserProfile {
   email: string;
+  display_name: string;
   role: string;
 }
 
@@ -16,9 +17,19 @@ export function Profile() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
 
+      const { data: profileData, error: profileError } = await supabase
+        .from('profiles')
+        .select('display_name')
+        .eq('id', user.id)
+        .single();
+
+      if (profileError) throw profileError;
+      if (!profileData) throw new Error("Profile not found");
+
       setProfile({
         email: user.email || '',
-        role: user.role || 'User' // Default to 'User' if role is not set
+        display_name: profileData.display_name,
+        role: user.role || 'User'
       });
     };
 
@@ -33,12 +44,12 @@ export function Profile() {
   if (!profile) return null;
 
   return (
-    <div className="flex items-center justify-between h-full w-full">
-      <div className="flex flex-col px-2 py-1 text-sm">
-        <div className="text-muted-foreground truncate" title={profile.email}>
-          {profile.email}
+    <div className="grid grid-cols-[1fr,auto] h-full items-center">
+      <div className="px-2 py-1 text-sm">
+        <div className="font-medium" title={profile.email}>
+          {profile.display_name}
         </div>
-        <div className="font-medium">
+        <div className="text-muted-foreground text-xs">
           {profile.role}
         </div>
       </div>

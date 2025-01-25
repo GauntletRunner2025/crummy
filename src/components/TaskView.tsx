@@ -4,6 +4,7 @@ import { X } from "lucide-react";
 import { useState } from "react";
 import { supabase } from "@/lib/supabase";
 import '@/styles/task-view.css';
+import type { ActionTemplate } from "@/types/ActionTemplate";
 
 interface Task {
   id: string;
@@ -19,11 +20,13 @@ interface Task {
 interface TaskViewProps {
   task: Task | null;
   onClose: () => void;
+  onTemplateSelect?: (template: ActionTemplate) => void;
 }
 
 interface TaskTypeViewProps {
   task: Task;
   onClose: () => void;
+  onTemplateSelect?: (template: ActionTemplate) => void;
 }
 
 function TaskTypeView({ task, onClose, children }: TaskTypeViewProps & { children: JSX.Element }) {
@@ -74,7 +77,7 @@ function DefaultTaskView({ task, onClose }: TaskTypeViewProps) {
   );
 }
 
-function SetDisplayNameView({ task, onClose }: TaskTypeViewProps) {
+function SetDisplayNameView({ task, onClose, onTemplateSelect }: TaskTypeViewProps) {
   const [displayName, setDisplayName] = useState('');
   const [isUpdating, setIsUpdating] = useState(false);
 
@@ -106,6 +109,20 @@ function SetDisplayNameView({ task, onClose }: TaskTypeViewProps) {
     }
   };
 
+  // Add static method to handle template processing
+  SetDisplayNameView.processTemplate = (template: ActionTemplate) => {
+    import(`@/lib/actionTemplates/${template.processor_function}`)
+      .then((module) => {
+        const processor = module[template.processor_function];
+        if (processor) {
+          processor(task).then((result: { displayName: string }) => {
+            setDisplayName(result.displayName);
+          });
+        }
+      })
+      .catch(console.error);
+  };
+
   return (
     <TaskTypeView task={task} onClose={onClose}>
       <div className="space-y-4">
@@ -131,7 +148,7 @@ function SetDisplayNameView({ task, onClose }: TaskTypeViewProps) {
   );
 }
 
-export function TaskView({ task, onClose }: TaskViewProps) {
+export function TaskView({ task, onClose, onTemplateSelect }: TaskViewProps) {
   if (!task) {
     return (
       <div className="task-view-container flex items-center justify-center text-muted-foreground">
@@ -141,7 +158,7 @@ export function TaskView({ task, onClose }: TaskViewProps) {
   }
 
   return task.type_id === 'SetDisplayName' ? (
-    <SetDisplayNameView task={task} onClose={onClose} />
+    <SetDisplayNameView task={task} onClose={onClose} onTemplateSelect={onTemplateSelect} />
   ) : (
     <DefaultTaskView task={task} onClose={onClose} />
   );

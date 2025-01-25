@@ -15,13 +15,6 @@
                                       "name":  "text",
                                       "description":  "text"
                                   },
-                   "actions":  {
-                                   "id":  "uuid",
-                                   "task_type_id":  "text",
-                                   "name":  "text",
-                                   "description":  "text",
-                                   "action_data":  "jsonb"
-                               },
                    "profiles":  {
                                     "id":  "uuid",
                                     "display_name":  "text",

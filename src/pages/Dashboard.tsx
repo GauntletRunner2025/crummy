@@ -1,9 +1,10 @@
 import MainLayout from "@/components/MainLayout";
 import { TaskList } from "@/components/TaskList";
 import { TaskView } from "@/components/TaskView";
-import { ActionList } from '@/components/ActionList';
 import { Profile } from '@/components/Profile';
+import { ActionTemplatesPanel } from '@/components/ActionTemplatesPanel';
 import { useState } from 'react';
+import type { ActionTemplate } from '@/types/ActionTemplate';
 
 interface SelectedTask {
   id: string;
@@ -13,6 +14,11 @@ interface SelectedTask {
 
 export default function Dashboard() {
   const [selectedTask, setSelectedTask] = useState<SelectedTask | null>(null);
+
+  const handleTemplateSelect = (template: ActionTemplate) => {
+    // The template processing will be handled by the TaskView component
+    console.log('Selected template:', template);
+  };
 
   return (
     <MainLayout
@@ -33,13 +39,17 @@ export default function Dashboard() {
         content: (
           <TaskView 
             task={selectedTask} 
-            onClose={() => setSelectedTask(null)} 
+            onClose={() => setSelectedTask(null)}
+            onTemplateSelect={handleTemplateSelect}
           />
         )
       }}
       rightPanel={{
         content: (
-          <ActionList taskTypeId={selectedTask?.type_id || null} />
+          <ActionTemplatesPanel
+            selectedTask={selectedTask}
+            onTemplateSelect={handleTemplateSelect}
+          />
         )
       }}
       bottomLeft={{

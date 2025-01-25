@@ -1,5 +1,6 @@
 import React from 'react';
 import '@/styles/globals.css';
+import '@/styles/grid-layout.css';
 
 interface GridSlot {
   content: React.ReactNode;
