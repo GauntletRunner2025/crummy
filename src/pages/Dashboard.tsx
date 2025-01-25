@@ -2,9 +2,8 @@ import MainLayout from "@/components/MainLayout";
 import { TaskList } from "@/components/TaskList";
 import { TaskView } from "@/components/TaskView";
 import { Profile } from '@/components/Profile';
-import { ActionTemplatesPanel } from '@/components/ActionTemplatesPanel';
+import { DerivedViewsList } from '@/components/DerivedViewsList';
 import { useState } from 'react';
-import type { ActionTemplate } from '@/types/ActionTemplate';
 
 interface SelectedTask {
   id: string;
@@ -14,11 +13,7 @@ interface SelectedTask {
 
 export default function Dashboard() {
   const [selectedTask, setSelectedTask] = useState<SelectedTask | null>(null);
-
-  const handleTemplateSelect = (template: ActionTemplate) => {
-    // The template processing will be handled by the TaskView component
-    console.log('Selected template:', template);
-  };
+  const [selectedViewId, setSelectedViewId] = useState<string | null>(null);
 
   return (
     <MainLayout
@@ -31,7 +26,10 @@ export default function Dashboard() {
         content: (
           <TaskList 
             selectedTask={selectedTask} 
-            onTaskSelect={setSelectedTask}
+            onTaskSelect={(task) => {
+              setSelectedTask(task);
+              setSelectedViewId(null); // Reset view selection when task changes
+            }}
           />
         )
       }}
@@ -39,16 +37,20 @@ export default function Dashboard() {
         content: (
           <TaskView 
             task={selectedTask} 
-            onClose={() => setSelectedTask(null)}
-            onTemplateSelect={handleTemplateSelect}
+            onClose={() => {
+              setSelectedTask(null);
+              setSelectedViewId(null);
+            }}
+            selectedViewId={selectedViewId}
           />
         )
       }}
       rightPanel={{
         content: (
-          <ActionTemplatesPanel
+          <DerivedViewsList
             selectedTask={selectedTask}
-            onTemplateSelect={handleTemplateSelect}
+            onViewSelect={setSelectedViewId}
+            selectedViewId={selectedViewId}
           />
         )
       }}

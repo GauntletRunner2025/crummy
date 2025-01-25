@@ -4,6 +4,12 @@
                                  "id":  "uuid",
                                  "role":  "user_role"
                              },
+                   "onboarding":  {
+                                      "id":  "uuid",
+                                      "user_id":  "uuid",
+                                      "role":  "text",
+                                      "created_at":  "timestamptz"
+                                  },
                    "tasks":  {
                                  "id":  "uuid",
                                  "title":  "text",
@@ -19,20 +25,6 @@
                                     "id":  "uuid",
                                     "display_name":  "text",
                                     "avatar_url":  "text"
-                                },
-                   "onboarding":  {
-                                      "id":  "uuid",
-                                      "user_id":  "uuid",
-                                      "role":  "text",
-                                      "created_at":  "timestamptz"
-                                  },
-                   "action_templates":  {
-                                            "id":  "uuid",
-                                            "name":  "text",
-                                            "description":  "text",
-                                            "processor_function":  "text",
-                                            "is_active":  "bool",
-                                            "task_type":  "text"
-                                        }
+                                }
                }
 }

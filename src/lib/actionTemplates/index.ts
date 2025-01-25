@@ -1,1 +1,0 @@
-export { anonymousNameProcessor } from './anonymousNameProcessor';
