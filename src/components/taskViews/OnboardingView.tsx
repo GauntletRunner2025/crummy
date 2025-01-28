@@ -5,6 +5,7 @@ import { X } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/lib/supabase";
 import { BaseTaskView } from './BaseTaskView';
+import styles from './OnboardingView.module.css';
 
 interface OnboardingViewState {
   targetEmail: string;
@@ -70,11 +71,6 @@ export class OnboardingView extends BaseTaskView<OnboardingViewState> {
     const { notes } = this.state;
     const { task } = this.props;
     
-    if (!notes?.trim()) {
-      this.setState({ error: 'Please enter onboarding notes' });
-      return;
-    }
-
     if (!task?.target_id) {
       this.setState({ error: 'Invalid task: missing target ID' });
       return;
@@ -118,7 +114,7 @@ export class OnboardingView extends BaseTaskView<OnboardingViewState> {
 
     if (isLoading) {
       return (
-        <div className="task-view-content text-muted-foreground">
+        <div className={`task-view-content text-muted-foreground ${styles.taskViewContent}`}>
           Loading onboarding details...
         </div>
       );
@@ -126,14 +122,14 @@ export class OnboardingView extends BaseTaskView<OnboardingViewState> {
 
     if (error) {
       return (
-        <div className="task-view-content text-destructive">
+        <div className={`task-view-content text-destructive ${styles.taskViewContent}`}>
           {error}
         </div>
       );
     }
 
     return (
-      <div className="task-view-content space-y-4">
+      <div className={`task-view-content space-y-4 ${styles.taskViewContent}`}>
         <div className="space-y-4">
           <h3 className="text-lg font-medium">New User Onboarding</h3>
 
@@ -160,12 +156,11 @@ export class OnboardingView extends BaseTaskView<OnboardingViewState> {
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium">Onboarding Notes</label>
             <Textarea
               value={notes}
               onChange={(e) => this.setState({ notes: e.target.value, error: null })}
               placeholder="Enter any notes about the onboarding process..."
-              className="min-h-[200px]"
+              className={`${styles.notesTextarea}`}
             />
           </div>
         </div>
@@ -181,7 +176,7 @@ export class OnboardingView extends BaseTaskView<OnboardingViewState> {
           </Button>
           <Button
             onClick={() => this.handleSubmit()}
-            disabled={isSubmitting || !notes?.trim()}
+            disabled={isSubmitting}
           >
             {isSubmitting ? "Processing..." : "Complete Onboarding"}
           </Button>

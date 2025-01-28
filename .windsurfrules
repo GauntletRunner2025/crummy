@@ -1,3 +1,5 @@
+Feel free to ask me, the user, for clarification or details! Don't worry about wasting tokens. Whats important is our collaboration.
+When deploying edge functions, we need to pass the project ref in the ```npx supabase functions deploy myFunctionName --project-ref myProjectId``` or it'll break while waiting for a text selection in the terminal. The Project id should be in .env but if you can't access it, ask me.
 Remember this is a React app, so directly manipulating the DOM is not what we want. Do it the React way.
 Rather than modifying existing .sql migration scripts, prefer to make changes via a new file. This will help with changes being effected via suprabase migration up. Just changing how the table was created in the first place, for example, is not what we want. 
 
